@@ -1437,6 +1437,29 @@ fetch('songs.json')
   .then(json => { data = json; apply(); })
   .catch(err => console.warn('No se pudo cargar songs.json, usando backup embebido.'));
 
+// --- Funciones de cola pública ---
+const API_URL = 'https://script.google.com/macros/s/AKfycbz945JI4rHH6SRA17HIlSc-wnPxFelf9UMKu-QN7roincHK5R32oH_vYmIx3bi-IX6Y/exec';
+
+function addToQueue(user, song) {
+  fetch(API_URL, {
+    method: 'POST',
+    body: JSON.stringify({ user, song }),
+    headers: { 'Content-Type': 'application/json' }
+  }).then(() => loadQueue());
+}
+
+function loadQueue() {
+  fetch(API_URL)
+    .then(r => r.json())
+    .then(rows => {
+      document.getElementById('queueList').innerHTML =
+        rows.map(row => `<li><strong>${row.usuario}</strong> – ${row.cancion}</li>`).join('');
+    });
+}
+
+setInterval(loadQueue, 5000);
+document.addEventListener('DOMContentLoaded', loadQueue);
+
 
     // Utilidades
     const $_ = (sel, el = document) => el.querySelector(sel);
@@ -1582,5 +1605,8 @@ fetch('songs.json')
     // Primera render
     apply();
   </script>
-</body>
+<div>
+<h3>Cola actual</h3>
+<ul id="queueList"></ul>
+</div></body>
 </html>
