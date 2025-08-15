@@ -1605,8 +1605,18 @@ document.addEventListener('DOMContentLoaded', loadQueue);
     // Primera render
     apply();
   </script>
-<div>
+
+<div id="queueSection">
 <h3>Cola actual</h3>
 <ul id="queueList"></ul>
-</div></body>
+</div>
+<button id="scrollToQueue" style="position:fixed;bottom:20px;right:20px;padding:10px 15px;background:#6200ea;color:#fff;border:none;border-radius:5px;cursor:pointer;z-index:1000;">
+  Ver cola
+</button>
+<script>
+document.getElementById('scrollToQueue').addEventListener('click', () => {
+  document.getElementById('queueSection').scrollIntoView({ behavior: 'smooth' });
+});
+</script>
+</body>
 </html>
