@@ -1470,6 +1470,16 @@ function loadQueue() {
 setInterval(loadQueue, 5000);
 document.addEventListener('DOMContentLoaded', loadQueue);
 
+// --- Delegación de eventos para clicks en canciones ---
+document.addEventListener('click', (e) => {
+  const songCard = e.target.closest('.song, li, .card');
+  if (songCard && songCard.querySelector('.title, h3, strong')) {
+    const songTitle = songCard.querySelector('.title, h3, strong').textContent.trim();
+    const user = prompt("Introduce tu nombre o nick:");
+    if (user && songTitle) addToQueue(user, songTitle);
+  }
+});
+
 
     // Utilidades
     const $_ = (sel, el = document) => el.querySelector(sel);
