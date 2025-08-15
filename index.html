@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Catálogo de Canciones · UltraStar</title>
+<meta content="Catálogo ordenado por artista con buscador en vivo, QR para compartir y cola remota de peticiones." name="description"/>
+<style>
+    :root {
+      --bg: #0b0c10;
+      --panel: #111218;
+      --accent: #7c4dff;
+      --text: #e6e6e6;
+      --muted: #a5a5a5;
+      --chip: #1b1d29;
+      --border: #232436;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: radial-gradient(1200px 600px at 10% -10%, #17192a, transparent), var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+    }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: linear-gradient(180deg, rgba(11,12,16,0.95), rgba(11,12,16,0.7) 80%, transparent);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--border);
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; padding: 20px; }
+    .title { display:flex; align-items:center; gap:12px; flex-wrap: wrap; }
+    .badge {
+      background: linear-gradient(120deg, var(--accent), #3d9eff);
+      color: white; padding: 6px 10px; border-radius: 999px; font-weight: 600; font-size: 12px;
+      letter-spacing: .4px;
+    }
+    .searchbar {
+      margin-top: 14px; display:flex; gap:10px; flex-wrap: wrap;
+    }
+    .searchbar input[type="text"] {
+      flex: 1;
+      min-width: 240px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      outline: none;
+      font-size: 16px;
+    }
+    .searchbar .controls {
+      display:flex; gap:10px; align-items:center; flex-wrap: wrap;
+    }
+    .btn {
+      background: var(--chip);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 10px 12px; border-radius: 12px; cursor: pointer;
+      font-weight: 600; font-size: 14px;
+    }
+    .btn:hover { border-color: #2f3150; }
+    .select {
+      background: var(--panel); border:1px solid var(--border); color:var(--text);
+      padding: 10px 12px; border-radius: 12px; font-size: 14px;
+    }
+    main .grid {
+      display: grid; grid-template-columns: repeat(1, minmax(0, 1fr)); gap: 12px; margin-top: 18px;
+    }
+    @media (min-width: 640px) {
+      main .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1024px) {
+      main .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    .card {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 80%), var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 14px;
+      transition: transform .12s ease, border-color .12s ease;
+    }
+    .card:hover { transform: translateY(-2px); border-color: #2f3150; }
+    .artist { font-weight: 700; letter-spacing: .2px; }
+    .title-txt { color: var(--muted); margin-top: 2px; }
+    .meta { display:flex; gap:8px; flex-wrap:wrap; margin-top: 10px; }
+    .chip { background: var(--chip); border:1px solid var(--border); padding:4px 8px; border-radius:999px; font-size:12px; color:var(--muted); }
+    footer {
+      margin-top: 30px; padding: 30px 0; border-top:1px solid var(--border); color: var(--muted);
+    }
+    details { background: #0f111a; border:1px solid var(--border); border-radius:12px; padding: 12px; }
+    details summary { cursor: pointer; font-weight: 600; }
+    .qr-wrap { display:flex; align-items:center; gap:14px; flex-wrap: wrap; }
+    #qrcode { padding: 8px; background: white; border-radius: 12px; }
+    .small { font-size: 12px; color: var(--muted); }
+    .right { margin-left: auto; }
+    .highlight { color: #b7c5ff; }
+  </style>
+</head>
+<body>
+<header>
+<div class="wrap">
+<div class="title">
+<span class="badge">UltraStar</span>
+<h1 style="margin:0">Catálogo de canciones</h1>
+<span class="small">buscador en vivo · QR · cola remota (opcional)</span>
+</div>
+<div class="searchbar">
+<input autofocus="" id="search" placeholder="Buscar por artista o título…" type="text"/>
+<div class="controls">
+<label>Ordenar por
+            <select class="select" id="sort">
+<option value="artist">Artista (A–Z)</option>
+<option value="title">Título (A–Z)</option>
+</select>
+</label>
+<button class="btn" id="clear" type="button">Limpiar</button>
+<button class="btn right" id="share" type="button">Compartir</button>
+</div>
+</div>
+</div>
+</header>
+<main class="wrap">
+<div class="qr-wrap" style="margin-top:6px;">
+<div id="qrcode" title="Escanéame para abrir este catálogo"></div>
+<div>
+<div class="small">Escanea el QR para abrir este catálogo. También puedes <a href="#" id="copyLink" style="color:#9ecbff">copiar el enlace</a>.</div>
+<div class="small">El QR se actualiza con el término de búsqueda para compartir filtros.</div>
+</div>
+</div>
+<section id="list">
+<div class="grid" id="grid"></div>
+<div class="small" id="empty" style="display:none; margin-top:12px;">No hay resultados para tu búsqueda.</div>
+</section>
+<section style="margin-top:24px;">
+<details>
+<summary>Cola remota de peticiones (opcional)</summary>
+<p class="small">Si quieres recoger peticiones de canciones desde esta página, indica un endpoint POST (por ejemplo, una función serverless gratuita) y habilita la cola.</p>
+<form id="reqForm" style="display:grid; gap:10px; grid-template-columns: 1fr 1fr;">
+<input class="select" id="endpoint" placeholder="https://tu-endpoint.com/queue" style="grid-column:1 / -1;" type="text"/>
+<input class="select" id="nick" placeholder="Tu nombre o nick" type="text"/>
+<input class="select" id="song" placeholder="Canción o artista a pedir" type="text"/>
+<button class="btn" type="submit">Enviar petición</button>
+<span class="small" id="reqMsg" style="grid-column:1 / -1;"></span>
+</form>
+</details>
+</section>
+</main>
+<footer class="wrap small">Generado automáticamente · Puedes guardar este archivo y abrirlo en cualquier sitio.</footer>
+<!-- Datos embebidos desde tu CSV -->
+
+<!-- Librería QRCode (MIT, basada en qrcode.js por Kazuhiko Arase; versión ligera adaptada) -->
+<script>
+let data = [];
+fetch('songs.json')
+  .then(response => response.json())
+  .then(json => { data = json; apply(); })
+  .catch(err => console.error('Error cargando songs.json:', err));
+</script><script>
+  /*! qrcode.js (lite) – MIT – https://github.com/davidshimjs/qrcodejs */
+  /* Minified build inlined for offline use */
+  // BEGIN QR LIB
+  (function(o){function m(a){this.mode=n,this.data=a}function p(a){this.totalCount=a,this.numData=0,this.numEC=0}function q(a){this.typeNumber=a,this.errorCorrectLevel=h.M,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function r(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=a.length-c;this.buf=new Array(this.num+1);for(var d=0;d<this.num;d++)this.buf[d]=a[d+c];this.buf[this.num]=b}function s(a,b){this.rsBlocks=function(a,b){var c;switch(b){case h.L:c=t.RS_BLOCK_TABLE_L;break;case h.M:c=t.RS_BLOCK_TABLE_M;break;case h.Q:c=t.RS_BLOCK_TABLE_Q;break;case h.H:c=t.RS_BLOCK_TABLE_H;break;default:throw new Error("bad rs block @ level: "+b)}var d=c[a-1];if(!d)throw new Error("bad rs block @ typeNumber: "+a);for(var e=[],f=0;f<d.length/3;f++)for(var g=d[3*f+0],i=d[3*f+1],j=d[3*f+2],k=0;k<g;k++)e.push(new p(i,j));return e}(a,b)}function u(a){this.buffer=[],this.length=0,this.put=function(a,b){for(var c=0;c<b;c++)this.putBit(1==(a>>>b-c-1&1))},this.putBit=function(a){this.buffer.push(a?1:0),this.length++}}var n=4,h={L:1,M:0,Q:3,H:2},t={RS_BLOCK_TABLE_L:[[1,26,19],[1,44,34],[1,70,55],[1,100,80],[1,134,108],[2,86,68],[2,98,78],[2,121,97],[2,146,116],[2,86,68],[2,98,78]],RS_BLOCK_TABLE_M:[[1,26,16],[1,44,28],[1,70,44],[2,50,32],[2,67,43],[4,43,27],[2,68,43],[4,81,50],[2,92,36],[4,50,32],[2,86,30]],RS_BLOCK_TABLE_Q:[[1,26,13],[1,44,22],[2,35,17],[2,43,24],[2,60,18],[4,34,14],[4,43,16],[4,81,26],[4,50,20],[4,50,22],[4,50,24]],RS_BLOCK_TABLE_H:[[1,26,9],[1,44,16],[2,35,13],[4,25,9],[2,60,12],[4,34,10],[4,43,12],[2,68,14],[4,50,14],[2,50,12],[2,50,12]]};q.prototype={addData:function(a){this.dataList.push(new m(a)),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){if(this.typeNumber<1||this.typeNumber>10)throw new Error("typeNumber 1..10 only in lite build");this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,b){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var c=0;c<this.moduleCount;c++){{this.modules[c]=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++)this.modules[c][d]=null}}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupTimingPattern(),this.setupTypeInfo(a,b),this.mapData(this.createData(this.typeNumber,this.errorCorrectLevel),b)},setupPositionProbePattern:function(a,b){for(var c=-1;c<=7;c++)if(!(0>a+c||this.moduleCount<=a+c))for(var d=-1;d<=7;d++)0>b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&c<=6&&(0==d||6==d)||d>=0&&d<=6&&(0==c||6==c)||c>=2&&c<=4&&d>=2&&d<=4)},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null===this.modules[a][6]&&(this.modules[a][6]=0==a%2),null===this.modules[6][a]&&(this.modules[6][a]=0==a%2)},setupTypeInfo:function(a,b){for(var c=this.getBCHTypeInfo(this.errorCorrectLevel<<3|b),d=0;d<15;d++){var e=!a&&1==(c>>d&1);d<6?this.modules[d][8]=e:d<8?this.modules[d+1][8]=e:this.modules[this.moduleCount-15+d][8]=e}for(d=0;d<15;d++){e=!a&&1==(c>>d&1);d<8?this.modules[8][this.moduleCount-1-d]=e:d<9?this.modules[8][15-d-1]=e:this.modules[8][15-d]=e}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,f=0,g=this.moduleCount-1;g>0;g-=2)for(6==g&&g--;;){for(var i=0;i<2;i++)null===this.modules[d][g-i]&&(this.modules[d][g-i]=f<a.length?1==(a[f]>>>e&1):!1,e--,0>e&&(f++,e=7));if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=t.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createData:function(a,b){for(var c=s.getRSBlocks(a,b),d=new u,e=0;e<this.dataList.length;e++){var f=this.dataList[e];d.put(4,4),d.put(f.data.length,8);for(var g=0;g<f.data.length;g++)d.put(f.data.charCodeAt(g),8)}for(var h=0,i=0;i<c.length;i++)h+=c[i].numData;for(;d.length+4<=8*h;)d.put(0,4);for(;d.length%8!=0;)d.put(0,1);for(var j=0,k=0;k<c.length;k++)j+=c[k].numData;for(var l=new Array(j),m=0;m<l.length;m++)l[m]=255&d.buffer[m];return l},getBCHTypeInfo:function(a){for(var b=a<<10;0<=t.g15(b)-t.g15(1335);)b^=1335<<t.g15(b)-t.g15(1335);return a<<10|b&1023},setupPositionAdjustPattern:function(){},};var t=t||{};t.getBCHDigit=function(a){var b=0;for(;0!=a;)b++,a>>>=1;return b},t.g15=function(a){return t.getBCHDigit(a)},t.PATTERN_POSITION_TABLE=[],t.getLostPoint=function(a){for(var b=a.getModuleCount(),c=0,d=0;d<b;d++)for(var e=0;e<b;e++){for(var f=0,g=-1;g<=1;g++)if(!(d+g<0||b<=d+g))for(var h=-1;h<=1;h++)e+h<0||b<=e+h||(g==h||-g==h?f+=a.isDark(d+g,e+h)?1:-1:f+=a.isDark(d+g,e+h)?1:-1);Math.abs(f)>5&&(c+=3+Math.abs(f)-5)}for(d=0;d<b;d++)for(e=0;e<b;e++)a.isDark(d,e)&&c++;for(d=0;d<b;d++)for(e=0;e<b-6;e++)a.isDark(d,e)&&a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(e=0;e<b;e++)for(d=0;d<b-6;d++)a.isDark(d,e)&&a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6)&&(c+=40);for(var i=0,j=0,d=0;d<b;d++)for(e=0;e<b;e++)a.isDark(d,e)?i++:j++;return c+10*Math.abs(100*i/(i+j)-50)/5};
+  function QRCode(a,b){this._el=a,this._htOption=b,this._qrcode=null,this._canvas=null,this.makeCode=function(a){var b=1;a&&(b=Math.min(10,Math.max(1,Math.ceil(a.length/12)))),this._qrcode=new q(b,h.M),this._qrcode.addData(a),this._qrcode.make();var c=this._qrcode.getModuleCount();this._canvas||(this._canvas=document.createElement("canvas"),this._el.innerHTML="",this._el.appendChild(this._canvas));var d=this._htOption&&this._htOption.width||200;this._canvas.width=d,this._canvas.height=d;var e=Math.floor(d/c),f=(d-e*c)/2,g=this._canvas.getContext("2d");g.clearRect(0,0,d,d),g.fillStyle="#fff",g.fillRect(0,0,d,d),g.fillStyle="#000";for(var i=0;i<c;i++)for(var j=0;j<c;j++)this._qrcode.isDark(i,j)&&g.fillRect(f+i*e,f+j*e,e,e)}}
+  o.QRCode=QRCode;
+  })(window);
+  // END QR LIB
+  </script>
+<script>
+    // Utilidades
+    const $_ = (sel, el = document) => el.querySelector(sel);
+    const $$_ = (sel, el = document) => Array.from(el.querySelectorAll(sel));
+    const data = JSON.parse(document.getElementById('data').textContent || '[]');
+
+    // Normaliza claves comunes (por si el CSV trae variantes)
+    const guessKey = (...candidates) => {
+      const row = data[0] || {};
+      const keys = Object.keys(row).map(k => k.toLowerCase());
+      for (const c of candidates) {
+        const idx = keys.indexOf(c.toLowerCase());
+        if (idx !== -1) return Object.keys(row)[idx];
+      }
+      // fallback: primera columna
+      return Object.keys(row)[0];
+    };
+
+    const ARTIST_KEY = guessKey('artist','artista','singer','autor');
+    const TITLE_KEY  = guessKey('title','titulo','título','song');
+        
+    // Estado
+    let state = {
+      q: new URLSearchParams(location.search).get('q') || '',
+      sort: new URLSearchParams(location.search).get('sort') || 'artist',
+    };
+
+    // Elementos
+    const $search = $_('#search');
+    const $sort = $_('#sort');
+    const $grid = $_('#grid');
+    const $empty = $_('#empty');
+    const $qrcode = new QRCode($_('#qrcode'), { width: 140, height: 140 });
+    const $copyLink = $_('#copyLink');
+
+    // Inicializar UI
+    $search.value = state.q;
+    $sort.value = state.sort;
+
+    // Filtrar + ordenar
+    function apply() {
+      const q = $search.value.trim().toLowerCase();
+      const s = $sort.value;
+      const filtered = data.filter(row => {
+        const artist = String(row[ARTIST_KEY] || '').toLowerCase();
+        const title  = String(row[TITLE_KEY]  || '').toLowerCase();
+        return !q || artist.includes(q) || title.includes(q);
+      }).sort((a,b) => {
+        const ka = String(a[s === 'artist' ? ARTIST_KEY : TITLE_KEY] || '').toLowerCase();
+        const kb = String(b[s === 'artist' ? ARTIST_KEY : TITLE_KEY] || '').toLowerCase();
+        return ka.localeCompare(kb, 'es', { sensitivity: 'base' });
+      });
+
+      render(filtered);
+
+      // URL + QR actualizados
+      const u = new URL(location.href);
+      if (q) u.searchParams.set('q', q); else u.searchParams.delete('q');
+      if (s !== 'artist') u.searchParams.set('sort', s); else u.searchParams.delete('sort');
+      history.replaceState(null, '', u.toString());
+      $qrcode.makeCode(u.toString());
+      $copyLink.onclick = (e) => { e.preventDefault(); navigator.clipboard.writeText(u.toString()); };
+    }
+
+    function render(rows) {
+      $grid.innerHTML = '';
+      if (rows.length === 0) {
+        $empty.style.display = 'block';
+        return;
+      }
+      $empty.style.display = 'none';
+      const frag = document.createDocumentFragment();
+      rows.forEach(r => {
+        const card = document.createElement('article');
+        card.className = 'card';
+        card.innerHTML = `
+          <div class="artist">${escapeHtml(r[ARTIST_KEY] || '')}</div>
+          <div class="title-txt">${escapeHtml(r[TITLE_KEY] || '')}</div>
+          <div class="meta">
+            ${r[YEAR_KEY] ? `<span class="chip">Año: ${escapeHtml(r[YEAR_KEY])}</span>` : ''}
+            ${r[LANG_KEY] ? `<span class="chip">Idioma: ${escapeHtml(r[LANG_KEY])}</span>` : ''}
+          </div>
+        `;
+        frag.appendChild(card);
+      });
+      $grid.appendChild(frag);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g,'&amp;')
+        .replace(/</g,'&lt;')
+        .replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;')
+        .replace(/'/g,'&#039;');
+    }
+
+    // Eventos
+    $search.addEventListener('input', apply);
+    document.getElementById('clear').addEventListener('click', () => { $search.value=''; apply(); });
+    $sort.addEventListener('change', apply);
+    document.getElementById('share').addEventListener('click', async () => {
+      const u = new URL(location.href);
+      if ($search.value.trim()) u.searchParams.set('q', $search.value.trim());
+      if ($sort.value !== 'artist') u.searchParams.set('sort', $sort.value);
+      const url = u.toString();
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: document.title, url });
+        } else {
+          await navigator.clipboard.writeText(url);
+          alert('Enlace copiado al portapapeles');
+        }
+      } catch(e) { console.log(e); }
+    });
+
+    // Cola remota: POST al endpoint indicado (JSON)
+    document.getElementById('reqForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const endpoint = document.getElementById('endpoint').value.trim();
+      const nick = document.getElementById('nick').value.trim();
+      const song = document.getElementById('song').value.trim();
+      const msg = document.getElementById('reqMsg');
+      if (!endpoint) { msg.textContent = 'Añade un endpoint válido.'; return; }
+      if (!song) { msg.textContent = 'Escribe una canción o artista.'; return; }
+      msg.textContent = 'Enviando…';
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nick, song, at: new Date().toISOString() })
+        });
+        if (!res.ok) throw new Error('HTTP '+res.status);
+        msg.textContent = '✅ Petición enviada.';
+        document.getElementById('song').value='';
+      } catch (err) {
+        msg.textContent = '❌ Error enviando la petición: ' + err.message;
+      }
+    });
+
+    // Primera render
+    apply();
+  </script>
+</body>
+</html>
