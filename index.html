@@ -2,131 +2,118 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Catálogo de Canciones</title>
+<title>🎤 Catálogo de canciones</title>
 <style>
-    body { font-family: Arial, sans-serif; background: #0f0f14; color: white; margin: 0; padding: 0; }
-    header { padding: 1em; background: #1b1b24; text-align: center; font-size: 1.5em; font-weight: bold; }
-    .search-bar { display: flex; justify-content: center; padding: 1em; }
-    .search-bar input { width: 80%; padding: 0.5em; font-size: 1em; border-radius: 5px; border: none; }
-    .songs { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1em; padding: 1em; }
-    .song-card { background: #1e1e2d; padding: 1em; border-radius: 10px; cursor: pointer; }
-    .song-card:hover { background: #2c2c3d; }
-    .queue { padding: 1em; background: #15151f; }
-    .queue h2 { margin-top: 0; }
-    #topBtn, #bottomBtn { position: fixed; right: 20px; padding: 0.5em 1em; border: none; border-radius: 5px; cursor: pointer; }
-    #topBtn { bottom: 70px; background: #007bff; color: white; }
-    #bottomBtn { bottom: 20px; background: #28a745; color: white; }
-    .delete-btn { background: red; border: none; color: white; padding: 2px 6px; margin-left: 10px; border-radius: 4px; cursor: pointer; }
+    body { background-color: #14141a; color: white; font-family: Arial, sans-serif; }
+    h1 { text-align: center; }
+    input { width: 80%; padding: 10px; margin: 10px auto; display: block; border-radius: 5px; border: none; }
+    .song { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
+    .song:hover { background-color: #1e1e28; }
+    .queue-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; }
+    button { background: red; border: none; padding: 5px 10px; border-radius: 5px; color: white; cursor: pointer; }
+    button:hover { background: darkred; }
 </style>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 </head>
 <body>
 
-<header>🎤 Catálogo de canciones</header>
-<div class="search-bar">
-    <input type="text" id="searchInput" placeholder="Buscar por artista o título...">
-</div>
+<h1>🎤 Catálogo de canciones</h1>
+<input type="text" id="search" placeholder="Buscar por artista o título...">
 
-<div class="songs" id="songsContainer"></div>
+<div id="song-list"></div>
 
-<div class="queue">
-    <h2>📜 Cola de peticiones</h2>
-    <ul id="queueList"></ul>
-</div>
+<h2>📜 Cola de peticiones</h2>
+<div id="queue"></div>
 
-<button id="topBtn" onclick="scrollToTop()">⬆️ Arriba</button>
-<button id="bottomBtn" onclick="scrollToBottom()">⬇️ Ver cola</button>
-
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
+  var firebaseConfig = {
+    apiKey: "AIzaSyCAHqKUswtw9KUXhdeKs7z7WkIedI42Bk8",
+    authDomain: "cola-canciones.firebaseapp.com",
+    databaseURL: "https://cola-canciones-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "cola-canciones",
+    storageBucket: "cola-canciones.firebasestorage.app",
+    messagingSenderId: "879700000985",
+    appId: "1:879700000985:web:a393153549ae031bfd3ec8"
+  };
+  firebase.initializeApp(firebaseConfig);
+  var db = firebase.database();
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCAHqKUswtw9KUXhdeKs7z7WkIedI42Bk8",
-  authDomain: "cola-canciones.firebaseapp.com",
-  databaseURL: "https://cola-canciones-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "cola-canciones",
-  storageBucket: "cola-canciones.firebasestorage.app",
-  messagingSenderId: "879700000985",
-  appId: "1:879700000985:web:a393153549ae031bfd3ec8"
-};
+  let username = localStorage.getItem("username");
 
+  async function loadSongs() {
+    let res = await fetch("songs.json");
+    let songs = await res.json();
+    displaySongs(songs);
+  }
 
-// Inicializar Firebase
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.database(app);
-
-function cargarCanciones() {
-  fetch('songs.json')
-    .then(response => {
-      if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
-      return response.json();
-    })
-    .then(data => {
-      window.songsData = data;
-      mostrarCanciones(data);
-    })
-    .catch(error => console.error('Error cargando songs.json:', error));
-}
-
-function mostrarCanciones(canciones) {
-  const contenedor = document.getElementById('songsContainer');
-  contenedor.innerHTML = '';
-  canciones.forEach(song => {
-    const card = document.createElement('div');
-    card.className = 'song-card';
-    card.innerHTML = `<strong>${song.artist}</strong><br>${song.title}`;
-    card.addEventListener('click', () => pedirNombre(song));
-    contenedor.appendChild(card);
-  });
-}
-
-function pedirNombre(song) {
-  const nombre = prompt('Introduce tu nombre o nick:');
-  if (!nombre) return;
-  const refNueva = db.ref('cola').push();
-  refNueva.set({
-    usuario: nombre,
-    cancion: `${song.artist} - ${song.title}`,
-    timestamp: Date.now()
-  });
-}
-
-function cargarCola() {
-  const lista = document.getElementById('queueList');
-  db.ref('cola').on('value', snapshot => {
-    lista.innerHTML = '';
-    snapshot.forEach(child => {
-      const data = child.val();
-      const li = document.createElement('li');
-      li.textContent = `${data.usuario} pidió "${data.cancion}"`;
-      const btnBorrar = document.createElement('button');
-      btnBorrar.textContent = '❌';
-      btnBorrar.className = 'delete-btn';
-      btnBorrar.onclick = () => {
-        if (confirm('¿Estás seguro de que quieres eliminar esta canción?')) {
-          db.ref('cola/' + child.key).remove();
-        }
-      };
-      li.appendChild(btnBorrar);
-      lista.appendChild(li);
+  function displaySongs(songs) {
+    const list = document.getElementById("song-list");
+    list.innerHTML = "";
+    songs.forEach(song => {
+      const div = document.createElement("div");
+      div.className = "song";
+      div.textContent = `${song.artist} - ${song.title}`;
+      div.onclick = () => addToQueue(song.artist + " - " + song.title);
+      list.appendChild(div);
     });
+  }
+
+  function addToQueue(song) {
+    if (!username) {
+      username = prompt("Introduce tu nombre o nick:");
+      if (!username) return;
+      localStorage.setItem("username", username);
+    }
+    db.ref("queue").push({
+      user: username,
+      song: song,
+      time: Date.now()
+    });
+  }
+
+  function renderQueue(snapshot) {
+    const queueDiv = document.getElementById("queue");
+    queueDiv.innerHTML = "";
+    let items = [];
+    snapshot.forEach(child => {
+      items.push({ key: child.key, ...child.val() });
+    });
+    // Ordenar por fecha (más antiguas primero)
+    items.sort((a, b) => a.time - b.time);
+    items.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "queue-item";
+      div.innerHTML = `<span>${item.user} - ${item.song}</span>`;
+      
+      // Solo mostrar botón de borrar si es admin o dueño
+      if (username === "Gataz0" || username === item.user) {
+        const btn = document.createElement("button");
+        btn.textContent = "🗑";
+        btn.onclick = () => {
+          if (confirm("¿Estás seguro de que quieres borrar esta canción?")) {
+            db.ref("queue/" + item.key).remove();
+          }
+        };
+        div.appendChild(btn);
+      }
+      queueDiv.appendChild(div);
+    });
+  }
+
+  document.getElementById("search").addEventListener("input", async e => {
+    let term = e.target.value.toLowerCase();
+    let res = await fetch("songs.json");
+    let songs = await res.json();
+    let filtered = songs.filter(s => 
+      s.artist.toLowerCase().includes(term) || s.title.toLowerCase().includes(term)
+    );
+    displaySongs(filtered);
   });
-}
 
-document.getElementById('searchInput').addEventListener('input', e => {
-  const term = e.target.value.toLowerCase();
-  const filtradas = window.songsData.filter(s => 
-    s.artist.toLowerCase().includes(term) || s.title.toLowerCase().includes(term)
-  );
-  mostrarCanciones(filtradas);
-});
-
-function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-function scrollToBottom() { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
-
-cargarCanciones();
-cargarCola();
+  db.ref("queue").on("value", renderQueue);
+  loadSongs();
 </script>
 
 </body>
