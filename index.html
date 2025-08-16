@@ -56,62 +56,77 @@ const firebaseConfig = {
 const app = firebase.initializeApp(firebaseConfig);
 const db = firebase.database(app);
 
-let songsData = [{"artist": "a-ha", "title": "Take on me"}, {"artist": "ABBA", "title": "Dancing Queen"}, {"artist": "ABBA", "title": "Gimme! Gimme! Gimme! (A Man After Midnight)"}, {"artist": "ABBA", "title": "Mamma Mia"}, {"artist": "ABBA", "title": "Money Money Money"}, {"artist": "ABBA", "title": "Super Trouper"}, {"artist": "ABBA", "title": "Waterloo"}, {"artist": "AC/DC", "title": "Highway To Hell"}, {"artist": "AC/DC", "title": "T.N.T. (Live)"}, {"artist": "Adele", "title": "Someone Like You"}, {"artist": "Adele", "title": "Someone Like You (Studio)"}, {"artist": "Aerosmith", "title": "Dream on"}, {"artist": "Aerosmith", "title": "I don't want to miss a thing"}, {"artist": "Aladdn", "title": "Un mundo ideal"}, {"artist": "Alaska y Dinarama", "title": "A quin le importa"}, {"artist": "Amaral", "title": "El universo sobre mi"}, {"artist": "Amaral", "title": "Marta, Sebas, Guille y los dems"}, {"artist": "Amy Winehouse", "title": "Back To Black"}, {"artist": "Antonio Flores", "title": "No dudara"}, {"artist": "Aqua", "title": "Barbie Girl"}, {"artist": "Aventura ft. Don Omar", "title": "Ella y yo"}, {"artist": "Avicii", "title": "Hey brother"}, {"artist": "Avicii", "title": "Wake Me Up!"}, {"artist": "Avril Lavigne", "title": "Complicated"}, {"artist": "Avril Lavigne", "title": "Girlfriend"}, {"artist": "Avril Lavigne", "title": "Sk8er Boi"}, {"artist": "Bacilos", "title": "Caraluna"}, {"artist": "Backstreet Boys", "title": "Everybody (Backstreet's Back)"}, {"artist": "Backstreet Boys", "title": "I Want It That Way"}, {"artist": "Bee Gees", "title": "Stayin' Alive"}, {"artist": "Beyonc", "title": "Single ladies (Put a ring on it)"}, {"artist": "Beyonce", "title": "Crazy In Love"}, {"artist": "Bizarrap & Arcngel", "title": "Arcngel: Bzrp Music Sessions, Vol. 54"}, {"artist": "Black Eyed Peas", "title": "I Gotta Feeling"}, {"artist": "Blink 182", "title": "All the small things"}, {"artist": "Blondie", "title": "One way or another"}, {"artist": "Bob Marley", "title": "Get Up, Stand Up"}, {"artist": "Bob Marley", "title": "No Woman No Cry"}, {"artist": "Bob Marley & the Wailers", "title": "Could you be loved"}, {"artist": "Bon Jovi", "title": "Livin' on a Prayer"}, {"artist": "Bon Jovi", "title": "You Give Love A Bad Name"}, {"artist": "Britney Spears", "title": "Baby One More Time"}, {"artist": "Britney Spears", "title": "Oops! I did it again"}, {"artist": "Cali y El Dandee", "title": "Yo te esperar"}, {"artist": "Calle 13", "title": "Atrvete, te, te!"}, {"artist": "Camela", "title": "Cuando zarpa el amor"}, {"artist": "Camilo Sesto", "title": "Vivir así es morir de amor"}, {"artist": "Camp Rock", "title": "This Is Me"}, {"artist": "Campeones: Oliver y Benji", "title": "Oliver y Benji"}, {"artist": "Carlos Baute", "title": "Te regalo"}, {"artist": "Carlos Baute y Marta Snchez", "title": "Colgando en tus manos"}, {"artist": "Carly Rae Jepsen", "title": "Call Me Maybe"}, {"artist": "Celia Cruz", "title": "La vida es un carnaval"}, {"artist": "Celtas Cortos", "title": "20 de abril"}, {"artist": "Celtas Cortos", "title": "Cuentame un cuento"}, {"artist": "Chayanne", "title": "Salom"}, {"artist": "Chayanne", "title": "Torero"}, {"artist": "Chenoa", "title": "Cuando t vas"}, {"artist": "Cher", "title": "Believe"}, {"artist": "Chino & Nacho", "title": "Nia bonita"}, {"artist": "Chocolate", "title": "Mayonesa"}, {"artist": "Coti", "title": "Antes Que Ver El Sol"}, {"artist": "Coti y Andrs Calamaro", "title": "Nada fue un error"}, {"artist": "Coyote Dax", "title": "No rompas ms"}, {"artist": "Daddy Yankee", "title": "Ella me levant"}, {"artist": "Daddy Yankee", "title": "La despedida"}, {"artist": "Daddy Yankee", "title": "La nueva y la ex"}, {"artist": "Daddy Yankee", "title": "Limbo"}, {"artist": "Daddy Yankee", "title": "Llamado de emergencia"}, {"artist": "Daddy Yankee", "title": "Lo que pas, pas"}, {"artist": "Daft Punk", "title": "Get Lucky"}, {"artist": "David Bisbal", "title": "Ave Mara"}, {"artist": "David Bisbal", "title": "Bulera"}, {"artist": "David Bisbal", "title": "Corazn latino"}, {"artist": "David Bisbal feat Knaan", "title": "Waving Flag"}, {"artist": "David Bustamante y lex Casademunt", "title": "Dos hombres y un destino"}, {"artist": "David Civera", "title": "Bye Bye"}, {"artist": "Demi Lovato", "title": "Let It Go"}, {"artist": "Depeche Mode", "title": "Personal Jesus"}, {"artist": "Despistaos", "title": "Fsica o qumica"}, {"artist": "Diego Torres", "title": "Color esperanza"}, {"artist": "Don Omar", "title": "Dile"}, {"artist": "Don Omar", "title": "Hasta que salga el sol"}, {"artist": "Don Omar", "title": "Virtual diva (Versin mambo)"}, {"artist": "Don Omar & Lucenzo", "title": "Danza Kuduro"}, {"artist": "Dragon Ball Z", "title": "Luz, fuego, destruccin"}, {"artist": "Duncan Dhu", "title": "Cien gaviotas"}, {"artist": "Ed Sheeran", "title": "Perfect"}, {"artist": "Ed Sheeran", "title": "The A Team"}, {"artist": "El Arrebato", "title": "Bscate Un Hombre Que Te Quiera"}, {"artist": "El Canto del Loco", "title": "Besos"}, {"artist": "El Canto del Loco", "title": "Eres tonto"}, {"artist": "El Canto del Loco", "title": "Insoportable"}, {"artist": "El Canto del Loco", "title": "La madre de Jos"}, {"artist": "El Canto del Loco", "title": "Peter Pan"}, {"artist": "El Canto del Loco", "title": "Volver"}, {"artist": "El Canto Del Loco", "title": "Zapatillas"}, {"artist": "El Koala", "title": "Op, yo viaz un corr"}, {"artist": "El Sueo de Morfeo", "title": "Nunca volver"}, {"artist": "Elvis Crespo", "title": "Pntame"}, {"artist": "Elvis Crespo", "title": "Suavemente"}, {"artist": "Elvis Presley", "title": "Can't help falling in love"}, {"artist": "Estopa", "title": "Como Camarn"}, {"artist": "Estopa", "title": "La raja de tu falda"}, {"artist": "Estopa", "title": "Vacaciones"}, {"artist": "Estopa", "title": "Vino tinto"}, {"artist": "Evanescence", "title": "Bring Me to Life"}, {"artist": "Extremoduro", "title": "Salir"}, {"artist": "Fito y Fitipaldis", "title": "Antes de que cuente diez"}, {"artist": "Fito y Fitipaldis", "title": "La casa por el tejado"}, {"artist": "Fito Y Fitipaldis", "title": "Por La Boca Vive El Pez"}, {"artist": "Fito y Fitipaldis", "title": "Soldadito marinero"}, {"artist": "Frank Sinatra", "title": "My Way"}, {"artist": "Gente de Zona y Marc Anthony", "title": "La gozadera"}, {"artist": "George Michael", "title": "Careless Whisper"}, {"artist": "Gorillaz", "title": "Feel Good Inc."}, {"artist": "Gotye & Kimbra", "title": "Somebody That I Used To Know"}, {"artist": "Grease (John Travolta & Olivia Newton-John)", "title": "You're the One that I Want"}, {"artist": "Green Day", "title": "21 guns"}, {"artist": "Green Day", "title": "American Idiot"}, {"artist": "Green Day", "title": "Basket Case"}, {"artist": "Green Day", "title": "Boulevard of Broken Dreams"}, {"artist": "Green Day", "title": "Holiday"}, {"artist": "Green Day", "title": "Wake Me Up When September Ends"}, {"artist": "High School Musical", "title": "We're All In This Together"}, {"artist": "High School Musical 2", "title": "Bet On It"}, {"artist": "High School Musical 2", "title": "Fabulous"}, {"artist": "High School Musical 2", "title": "I Don't Dance"}, {"artist": "High School Musical 2", "title": "What Time Is It?"}, {"artist": "High School Musical 2", "title": "You Are the Music in Me"}, {"artist": "Hombres G", "title": "Devulveme A Mi Chica"}, {"artist": "Hrcules", "title": "De cero a hroe"}, {"artist": "Hroes del Silencio", "title": "Avalancha"}, {"artist": "Hroes del Silencio", "title": "Entre dos tierras"}, {"artist": "James Brown", "title": "I Feel Good"}, {"artist": "Jarabe de Palo", "title": "Bonito"}, {"artist": "Jarabe de Palo", "title": "La Flaca"}, {"artist": "Joan Manuel Serrat", "title": "Mediterrneo"}, {"artist": "Joaqun Sabina", "title": "19 das y 500 noches"}, {"artist": "Joaqun Sabina", "title": "Por el bulevar de los sueos rotos"}, {"artist": "John Denver", "title": "Take Me Home, Country Roads"}, {"artist": "Jos Luis Perales", "title": "Y cmo es l?"}, {"artist": "Journey", "title": "Don't Stop Believing"}, {"artist": "Juan Luis Guerra", "title": "A pedir su mano"}, {"artist": "Juan Luis Guerra", "title": "El Nigara en bicicleta"}, {"artist": "Juan Luis Guerra", "title": "La bilirrubina"}, {"artist": "Juan Luis Guerra", "title": "Las avispas"}, {"artist": "Juan Luis Guerra", "title": "Ojal que llueva caf"}, {"artist": "Juan Magan", "title": "Ella no sigue modas"}, {"artist": "Juanes", "title": "A Dios le pido"}, {"artist": "Juanes", "title": "La camisa negra"}, {"artist": "Julio Iglesias", "title": "Soy un truhn, soy un seor"}, {"artist": "Justin Bieber", "title": "One Less Lonely Girl"}, {"artist": "Justin Bieber & Jaden Smith", "title": "Never Say Never"}, {"artist": "Justin Bieber & Ludacris", "title": "Baby"}, {"artist": "Justin Timberlake", "title": "Mirrors"}, {"artist": "KAROL G", "title": "Si antes te hubiera conocido"}, {"artist": "Karol G y Nicki Minaj", "title": "Tusa"}, {"artist": "Katy Perry", "title": "The One That Got Away"}, {"artist": "Ke$ha", "title": "Tik Tok"}, {"artist": "King frica", "title": "La Bomba"}, {"artist": "Kiss", "title": "Rock and Roll All Nite"}, {"artist": "La Guardia", "title": "Cuando brille el sol"}, {"artist": "La Mosca Tse Tse", "title": "Para No Verte Ms"}, {"artist": "La Quinta Estacin", "title": "El sol no regresa"}, {"artist": "La Sirenita", "title": "Bajo el mar"}, {"artist": "La Unin", "title": "Lobo-hombre en Pars"}, {"artist": "Lady GaGa", "title": "Alejandro"}, {"artist": "Lady GaGa", "title": "Bad Romance"}, {"artist": "Lady GaGa", "title": "Born This Way"}, {"artist": "Lady GaGa", "title": "Judas"}, {"artist": "Lady Gaga", "title": "Poker Face"}, {"artist": "Lady GaGa feat. Colby O'Donis", "title": "Just Dance"}, {"artist": "Lady Gaga, Bradley Cooper", "title": "Shallow"}, {"artist": "Linkin Park", "title": "Crawling"}, {"artist": "Linkin Park", "title": "In The End"}, {"artist": "Linkin Park", "title": "Numb"}, {"artist": "Linkin Park", "title": "What I've done"}, {"artist": "LMFAO, Lauren Bennett & Goon Rock", "title": "Party Rock Anthem"}, {"artist": "Lola ndigo, TINI & Belinda", "title": "La nia de la escuela"}, {"artist": "Los Lobos", "title": "La bamba"}, {"artist": "Los Sabandeos", "title": "Islas Canarias"}, {"artist": "Lou Bega", "title": "Mambo No. 5"}, {"artist": "Luis Fonsi", "title": "No me doy por vencido"}, {"artist": "Luis Miguel", "title": "Ahora te puedes marchar"}, {"artist": "Luis Miguel", "title": "Entrgate"}, {"artist": "Luis Miguel", "title": "La chica del bikini azul"}, {"artist": "Luis Miguel", "title": "Por debajo de la mesa"}, {"artist": "Luis Miguel", "title": "Reloj"}, {"artist": "Luis Miguel", "title": "Suea"}, {"artist": "M-Clan", "title": "Carolina"}, {"artist": "M-Clan", "title": "Llamando a la Tierra"}, {"artist": "M-Clan", "title": "Sopa fra"}, {"artist": "Man", "title": "Clavado en un bar"}, {"artist": "Man", "title": "El rey tiburn"}, {"artist": "Man", "title": "En el muelle de San Blas"}, {"artist": "Man", "title": "Labios compartidos"}, {"artist": "Man", "title": "Rayando el sol"}, {"artist": "Man", "title": "Se me olvido otra vez"}, {"artist": "Manuel Turizo", "title": "La bachata"}, {"artist": "Manuel Turizo con Marshmello", "title": "El merengue"}, {"artist": "Marc Anthony", "title": "Ahora quien (salsa)"}, {"artist": "Marc Anthony", "title": "Vali la pena"}, {"artist": "Marc Anthony", "title": "Vivir mi vida"}, {"artist": "Marc Anthony", "title": "Y cmo es l"}, {"artist": "Maroon 5 feat. Wiz Khalifa", "title": "Payphone"}, {"artist": "Mecano", "title": "Hoy no me puedo levantar"}, {"artist": "Melendi", "title": "Caminando por la vida"}, {"artist": "Melendi", "title": "Hablando en plata"}, {"artist": "Melendi", "title": "Kisiera Yo Saber"}, {"artist": "Melendi", "title": "Un violinista en tu tejado"}, {"artist": "Metallica", "title": "Master of Puppets"}, {"artist": "Mgo de Oz", "title": "Fiesta pagana"}, {"artist": "Michael Jackson", "title": "Beat It"}, {"artist": "Michael Jackson", "title": "Billie Jean"}, {"artist": "Michael Jackson", "title": "Black or white"}, {"artist": "Michael Jackson", "title": "Smooth Criminal"}, {"artist": "Miguel Bos", "title": "Amante Bandido"}, {"artist": "Miguel Bos", "title": "Morenama"}, {"artist": "Miguel Bos y Bimba Bos", "title": "Como un lobo"}, {"artist": "Miguel Ros", "title": "Bienvenidos"}, {"artist": "Miguel Ros", "title": "Santa Luca"}, {"artist": "Mika", "title": "Grace Kelly"}, {"artist": "Miley Cyrus", "title": "Party In The U.S.A"}, {"artist": "Miley Cyrus", "title": "The Climb"}, {"artist": "Miley Cyrus", "title": "We Can't Stop"}, {"artist": "Miley Cyrus", "title": "Wrecking Ball"}, {"artist": "Muln", "title": "Todo un hombre har de ti"}, {"artist": "Natasha Bedingfield", "title": "Unwritten"}, {"artist": "Nena Daconte", "title": "Tena tanto que darte"}, {"artist": "Nickelback", "title": "How You Remind Me"}, {"artist": "Nirvana", "title": "Smells Like Teen Spirit"}, {"artist": "One Direction", "title": "Story Of My Life"}, {"artist": "One Direction", "title": "What Makes You Beautiful"}, {"artist": "Pereza", "title": "Estrella polar"}, {"artist": "Pereza", "title": "Princesas"}, {"artist": "Pignoise", "title": "Nada que perder"}, {"artist": "Pitbull", "title": "I Know You Want Me (Calle Ocho)"}, {"artist": "Pokemon", "title": "Pokemon"}, {"artist": "Psy", "title": "Gangnam Style"}, {"artist": "Queen", "title": "Another One Bites the Dust"}, {"artist": "Queen", "title": "Bohemian Rhapsody"}, {"artist": "Queen", "title": "Crazy Little Thing Called Love"}, {"artist": "Queen", "title": "I Want It All"}, {"artist": "Queen", "title": "I Want to Break Free"}, {"artist": "Queen", "title": "Radio Ga Ga"}, {"artist": "Queen", "title": "Somebody to Love"}, {"artist": "Queen", "title": "We Will Rock You"}, {"artist": "Quevedo con Bizarrap", "title": "Music Sessions #52"}, {"artist": "Radio Futura", "title": "Escuela de calor"}, {"artist": "Rammstein", "title": "Du Hast"}, {"artist": "Raphael", "title": "Yo soy aqul"}, {"artist": "Red Hot Chili Peppers", "title": "Dani California"}, {"artist": "Rfaga", "title": "Mentirosa"}, {"artist": "Rick Astley", "title": "Never gonna give you up"}, {"artist": "Ricky Martin", "title": "Livin' la vida loca"}, {"artist": "Ricky Martin", "title": "No importa la distancia"}, {"artist": "Rihanna", "title": "Diamonds"}, {"artist": "Rihanna", "title": "Disturbia"}, {"artist": "Rihanna", "title": "Don't stop the music"}, {"artist": "Rihanna", "title": "Umbrella"}, {"artist": "Rosala", "title": "Despech"}, {"artist": "ROSALÍA", "title": "MALAMENTE (Cap.1 Augurio)"}, {"artist": "ROSALÍA", "title": "PIENSO EN TU MIRÁ (Cap.3 Celos)"}, {"artist": "Rubn Blades", "title": "Pedro navaja"}, {"artist": "Sabrina Carpenter", "title": "Espresso"}, {"artist": "Seguridad Social", "title": "Quiero tener tu presencia"}, {"artist": "Shakira ft. Freshlyground", "title": "Waka waka (Esto es frica)"}, {"artist": "Ska-P", "title": "Cannabis"}, {"artist": "Ska-P", "title": "El vals del obrero"}, {"artist": "Spice Girls", "title": "Wannabe"}, {"artist": "System of a Down", "title": "Chop Suey!"}, {"artist": "Tarzn", "title": "Dos mundos"}, {"artist": "Tarzn", "title": "Hijo de hombre"}, {"artist": "Taylor Swift", "title": "22"}, {"artist": "Taylor Swift", "title": "All Too Well"}, {"artist": "Taylor Swift", "title": "Anti-Hero"}, {"artist": "Taylor Swift", "title": "Back To December"}, {"artist": "Taylor Swift", "title": "Bad Blood"}, {"artist": "Taylor Swift", "title": "Better Than Revenge"}, {"artist": "Taylor Swift", "title": "Blank Space"}, {"artist": "Taylor Swift", "title": "Change"}, {"artist": "Taylor Swift", "title": "Crazier"}, {"artist": "Taylor Swift", "title": "Cruel Summer"}, {"artist": "Taylor Swift", "title": "Dear John"}, {"artist": "Taylor Swift", "title": "Forever And Always"}, {"artist": "Taylor Swift", "title": "I Knew You Were Trouble"}, {"artist": "Taylor Swift", "title": "I'm Only Me When I'm With You"}, {"artist": "Taylor Swift", "title": "Lavender Haze"}, {"artist": "Taylor Swift", "title": "Love Story"}, {"artist": "Taylor Swift", "title": "Mean"}, {"artist": "Taylor Swift", "title": "Mine"}, {"artist": "Taylor Swift", "title": "Our Song"}, {"artist": "Taylor Swift", "title": "Out Of The Woods"}, {"artist": "Taylor Swift", "title": "Picture to Burn"}, {"artist": "Taylor Swift", "title": "Red"}, {"artist": "Taylor Swift", "title": "Safe and Sound"}, {"artist": "Taylor Swift", "title": "Sparks Fly"}, {"artist": "Taylor Swift", "title": "Starlight"}, {"artist": "Taylor Swift", "title": "We Are Never Ever Getting Back Together"}, {"artist": "Taylor Swift", "title": "White Horse"}, {"artist": "Taylor Swift", "title": "willow"}, {"artist": "Taylor Swift", "title": "You Belong With Me"}, {"artist": "Taylor Swift", "title": "You need to calm down"}, {"artist": "Teddy Swims", "title": "Lose Control"}, {"artist": "The Cranberries", "title": "Zombie"}, {"artist": "The Eagles", "title": "Hotel California"}, {"artist": "The Police", "title": "Every Breath You Take"}, {"artist": "Tonny Tun Tun", "title": "Cuando acaba el placer"}, {"artist": "Toto", "title": "Africa"}, {"artist": "Toto", "title": "Hold The Line"}, {"artist": "Toto", "title": "Rosanna"}, {"artist": "Vicente Fernandez", "title": "El Rey"}, {"artist": "Village People", "title": "YMCA"}, {"artist": "Wisin & Yandel Ft. Aventura", "title": "Noche de sexo"}, {"artist": "Zapato Veloz", "title": "Tractor amarillo"}, {"artist": "Zucchero", "title": "Baila morena"}];
-
-function renderSongs(songs) {
-    const container = document.getElementById('songsContainer');
-    container.innerHTML = '';
-    songs.forEach(song => {
-        const card = document.createElement('div');
-        card.className = 'song-card';
-        card.innerHTML = `<strong>${song.artist}</strong><br>${song.title}`;
-        card.addEventListener('click', () => requestSong(song));
-        container.appendChild(card);
-    });
+function cargarCanciones() {
+  fetch('songs.json')
+    .then(response => {
+      if (!response.ok) throw new Error(`Error HTTP: ${response.status}`);
+      return response.json();
+    })
+    .then(data => {
+      window.songsData = data;
+      mostrarCanciones(data);
+    })
+    .catch(error => console.error('Error cargando songs.json:', error));
 }
 
-function requestSong(song) {
-    const user = prompt("Introduce tu nombre o nick:");
-    if (!user) return;
-    const newRef = db.ref('cola').push();
-    newRef.set({
-        usuario: user,
-        cancion: `${song.artist} - ${song.title}`,
-        timestamp: Date.now()
-    });
+function mostrarCanciones(canciones) {
+  const contenedor = document.getElementById('songsContainer');
+  contenedor.innerHTML = '';
+  canciones.forEach(song => {
+    const card = document.createElement('div');
+    card.className = 'song-card';
+    card.innerHTML = `<strong>${song.artist}</strong><br>${song.title}`;
+    card.addEventListener('click', () => pedirNombre(song));
+    contenedor.appendChild(card);
+  });
 }
 
-function loadQueue() {
-    const list = document.getElementById('queueList');
-    db.ref('cola').on('value', snapshot => {
-        list.innerHTML = '';
-        snapshot.forEach(childSnapshot => {
-            const data = childSnapshot.val();
-            const li = document.createElement('li');
-            li.textContent = `${data.usuario} pidió "${data.cancion}"`;
-            const delBtn = document.createElement('button');
-            delBtn.textContent = '❌';
-            delBtn.className = 'delete-btn';
-            delBtn.onclick = () => db.ref('cola/' + childSnapshot.key).remove();
-            li.appendChild(delBtn);
-            list.appendChild(li);
-        });
+function pedirNombre(song) {
+  const nombre = prompt('Introduce tu nombre o nick:');
+  if (!nombre) return;
+  const refNueva = db.ref('cola').push();
+  refNueva.set({
+    usuario: nombre,
+    cancion: `${song.artist} - ${song.title}`,
+    timestamp: Date.now()
+  });
+}
+
+function cargarCola() {
+  const lista = document.getElementById('queueList');
+  db.ref('cola').on('value', snapshot => {
+    lista.innerHTML = '';
+    snapshot.forEach(child => {
+      const data = child.val();
+      const li = document.createElement('li');
+      li.textContent = `${data.usuario} pidió "${data.cancion}"`;
+      const btnBorrar = document.createElement('button');
+      btnBorrar.textContent = '❌';
+      btnBorrar.className = 'delete-btn';
+      btnBorrar.onclick = () => {
+        if (confirm('¿Estás seguro de que quieres eliminar esta canción?')) {
+          db.ref('cola/' + child.key).remove();
+        }
+      };
+      li.appendChild(btnBorrar);
+      lista.appendChild(li);
     });
+  });
 }
 
 document.getElementById('searchInput').addEventListener('input', e => {
-    const term = e.target.value.toLowerCase();
-    const filtered = songsData.filter(s => 
-        s.artist.toLowerCase().includes(term) || s.title.toLowerCase().includes(term)
-    );
-    renderSongs(filtered);
+  const term = e.target.value.toLowerCase();
+  const filtradas = window.songsData.filter(s => 
+    s.artist.toLowerCase().includes(term) || s.title.toLowerCase().includes(term)
+  );
+  mostrarCanciones(filtradas);
 });
 
 function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 function scrollToBottom() { window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' }); }
 
-renderSongs(songsData);
-loadQueue();
+cargarCanciones();
+cargarCola();
 </script>
 
 </body>
