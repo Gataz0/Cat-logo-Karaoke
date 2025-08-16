@@ -1,120 +1,244 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>🎤 Catálogo de canciones</title>
-<style>
-    body { background-color: #14141a; color: white; font-family: Arial, sans-serif; }
-    h1 { text-align: center; }
-    input { width: 80%; padding: 10px; margin: 10px auto; display: block; border-radius: 5px; border: none; }
-    .song { padding: 10px; border-bottom: 1px solid #333; cursor: pointer; }
-    .song:hover { background-color: #1e1e28; }
-    .queue-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid #333; }
-    button { background: red; border: none; padding: 5px 10px; border-radius: 5px; color: white; cursor: pointer; }
-    button:hover { background: darkred; }
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>🎤 Catálogo de canciones</title>
+  <style>
+    :root{
+      --bg:#121218;
+      --panel:#16161f;
+      --card:#1b1b26;
+      --muted:#9aa0a6;
+      --accent:#6ee7b7;
+      --danger:#f87171;
+      --text:#e5e7eb;
+      --outline:#2a2a3a;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: radial-gradient(1000px 600px at 70% -200px, #1b1b26, #121218 60%),
+                  radial-gradient(1000px 600px at 0% 120%, #16161f, #121218 60%);
+      color:var(--text);
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+    }
+    .container{max-width:1280px; margin:0 auto; padding:28px 16px 80px}
+    .title{display:flex; align-items:center; gap:10px; font-size:22px; font-weight:700; letter-spacing:.2px; margin-bottom:16px}
+    .title .dot{width:8px;height:8px;background:#a78bfa;border-radius:999px;box-shadow:0 0 16px #a78bfaaa}
+    .search-bar{display:flex; gap:10px; align-items:center; margin:10px 0 18px}
+    .search-input{
+      flex:1; padding:14px 16px; border-radius:10px; border:1px solid var(--outline);
+      background:#0f0f15; color:var(--text); font-size:14px; outline:none;
+    }
+    .grid{display:grid; grid-template-columns:repeat(4,1fr); gap:14px}
+    @media (max-width:1100px){ .grid{grid-template-columns:repeat(3,1fr)} }
+    @media (max-width:800px){ .grid{grid-template-columns:repeat(2,1fr)} }
+    @media (max-width:520px){ .grid{grid-template-columns:1fr} }
+    .card{
+      background:linear-gradient(180deg, #191a24, #151520);
+      border:1px solid var(--outline);
+      border-radius:12px; padding:12px 14px; cursor:pointer;
+      transition:transform .08s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+    .card:hover{ transform:translateY(-1px); border-color:#2f3144; box-shadow:0 8px 24px rgba(0,0,0,.25) }
+    .artist{font-weight:700; margin-bottom:6px; color:#c7d2fe}
+    .title-song{font-size:13px; color:#d1d5db}
+    .section{margin-top:22px; background:var(--panel); border:1px solid var(--outline); border-radius:14px}
+    .section h3{margin:0; padding:12px 14px; font-size:15px; font-weight:700; border-bottom:1px solid var(--outline)}
+    .queue{padding:8px 6px}
+    .q-item{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 12px; border-radius:10px; border:1px solid var(--outline); background:#14141f; margin:8px;
+    }
+    .q-item .who{font-weight:600; color:#a3e635; margin-right:6px}
+    .q-item .song{color:#e5e7eb}
+    .q-actions{display:flex; gap:8px}
+    .btn{
+      appearance:none; border:1px solid var(--outline); background:#0f0f15;
+      color:var(--text); padding:8px 10px; border-radius:10px; font-size:12px; cursor:pointer;
+    }
+    .btn:hover{border-color:#2f3144}
+    .btn-danger{background:#231a1d; border-color:#3a2026}
+    .btn-danger:hover{background:#2a1f23; border-color:#4b2630}
+    .fab{
+      position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:10px; z-index:20;
+    }
+    .chip{border-radius:999px; padding:8px 12px; background:#0f0f15; border:1px solid var(--outline); font-size:12px}
+    .notif{
+      position:fixed; left:50%; top:16%; transform:translate(-50%,-50%) scale(.96);
+      background:#0f0f15; border:1px solid var(--outline); padding:12px 16px; border-radius:12px;
+      display:none; align-items:center; gap:10px; z-index:50; box-shadow:0 12px 40px rgba(0,0,0,.45);
+      font-weight:600;
+    }
+    .notif.show{display:flex; animation:pop .18s ease-out forwards}
+    .notif.ok{border-color:#234231}
+    .notif.err{border-color:#4b2630}
+    .icon{width:18px;height:18px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px}
+    .ok .icon{background:rgba(34,197,94,.15)}
+    .err .icon{background:rgba(239,68,68,.15)}
+    @keyframes pop{to{transform:translate(-50%,-50%) scale(1)}}
+  </style>
 </head>
 <body>
+  <div class="container">
+    <div class="title"><span class="dot"></span> <span>Catálogo de canciones</span></div>
 
-<h1>🎤 Catálogo de canciones</h1>
-<input type="text" id="search" placeholder="Buscar por artista o título...">
+    <div class="search-bar">
+      <input id="search" class="search-input" type="text" placeholder="Buscar por artista o título..." autocomplete="off"/>
+    </div>
 
-<div id="song-list"></div>
+    <div id="cards" class="grid"></div>
 
-<h2>📜 Cola de peticiones</h2>
-<div id="queue"></div>
+    <div id="queueSection" class="section">
+      <h3>📜 Cola de peticiones</h3>
+      <div id="queue" class="queue"></div>
+    </div>
+  </div>
 
-<!-- Firebase -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-<script>
-  var firebaseConfig = {
-    apiKey: "AIzaSyCAHqKUswtw9KUXhdeKs7z7WkIedI42Bk8",
-    authDomain: "cola-canciones.firebaseapp.com",
-    databaseURL: "https://cola-canciones-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "cola-canciones",
-    storageBucket: "cola-canciones.firebasestorage.app",
-    messagingSenderId: "879700000985",
-    appId: "1:879700000985:web:a393153549ae031bfd3ec8"
-  };
-  firebase.initializeApp(firebaseConfig);
-  var db = firebase.database();
+  <div class="fab">
+    <button class="chip" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ Arriba</button>
+    <button class="chip" onclick="document.getElementById('queueSection').scrollIntoView({behavior:'smooth'})">📄 Ver cola</button>
+  </div>
 
-  let username = localStorage.getItem("username");
+  <div id="notif" class="notif">
+    <span id="notifIcon" class="icon">✓</span>
+    <span id="notifText">Añadido</span>
+  </div>
 
-  async function loadSongs() {
-    let res = await fetch("songs.json");
-    let songs = await res.json();
-    displaySongs(songs);
-  }
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+  <script>
+    var firebaseConfig = {
+      apiKey: "AIzaSyCAHqKUswtw9KUXhdeKs7z7WkIedI42Bk8",
+      authDomain: "cola-canciones.firebaseapp.com",
+      databaseURL: "https://cola-canciones-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "cola-canciones",
+      storageBucket: "cola-canciones.firebasestorage.app",
+      messagingSenderId: "879700000985",
+      appId: "1:879700000985:web:a393153549ae031bfd3ec8"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-  function displaySongs(songs) {
-    const list = document.getElementById("song-list");
-    list.innerHTML = "";
-    songs.forEach(song => {
-      const div = document.createElement("div");
-      div.className = "song";
-      div.textContent = `${song.artist} - ${song.title}`;
-      div.onclick = () => addToQueue(song.artist + " - " + song.title);
-      list.appendChild(div);
-    });
-  }
+    let USERNAME = localStorage.getItem("karaoke_username") || "";
 
-  function addToQueue(song) {
-    if (!username) {
-      username = prompt("Introduce tu nombre o nick:");
-      if (!username) return;
-      localStorage.setItem("username", username);
-    }
-    db.ref("queue").push({
-      user: username,
-      song: song,
-      time: Date.now()
-    });
-  }
-
-  function renderQueue(snapshot) {
-    const queueDiv = document.getElementById("queue");
-    queueDiv.innerHTML = "";
-    let items = [];
-    snapshot.forEach(child => {
-      items.push({ key: child.key, ...child.val() });
-    });
-    // Ordenar por fecha (más antiguas primero)
-    items.sort((a, b) => a.time - b.time);
-    items.forEach(item => {
-      const div = document.createElement("div");
-      div.className = "queue-item";
-      div.innerHTML = `<span>${item.user} - ${item.song}</span>`;
-      
-      // Solo mostrar botón de borrar si es admin o dueño
-      if (username === "Gataz0" || username === item.user) {
-        const btn = document.createElement("button");
-        btn.textContent = "🗑";
-        btn.onclick = () => {
-          if (confirm("¿Estás seguro de que quieres borrar esta canción?")) {
-            db.ref("queue/" + item.key).remove();
-          }
-        };
-        div.appendChild(btn);
+    function ensureUsername() {
+      if (!USERNAME) {
+        USERNAME = prompt("Introduce tu nombre o nick") || "";
+        if (USERNAME.trim() === "") return false;
+        localStorage.setItem("karaoke_username", USERNAME.trim());
       }
-      queueDiv.appendChild(div);
+      return true;
+    }
+
+    function notify(ok, msg){
+      const n = document.getElementById("notif");
+      const t = document.getElementById("notifText");
+      const i = document.getElementById("notifIcon");
+      t.textContent = msg || (ok ? "Añadido" : "Error");
+      n.className = "notif " + (ok ? "ok":"err") + " show";
+      i.textContent = ok ? "✓" : "✕";
+      setTimeout(()=>{ n.className = "notif"; }, 1000);
+    }
+
+    let ALL_SONGS = [];
+    async function loadSongs(){
+      const res = await fetch("songs.json");
+      ALL_SONGS = await res.json();
+      renderSongs(ALL_SONGS);
+    }
+    function renderSongs(list){
+      const wrap = document.getElementById("cards");
+      wrap.innerHTML = "";
+      for(const s of list){
+        const el = document.createElement("button");
+        el.className = "card";
+        el.setAttribute("type","button");
+        el.innerHTML = '<div class="artist">'+escapeHtml(s.artist)+'</div><div class="title-song">'+escapeHtml(s.title)+'</div>';
+        el.addEventListener("click", ()=> onPickSong(s));
+        wrap.appendChild(el);
+      }
+    }
+    function escapeHtml(str){
+      return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+    }
+
+    async function onPickSong(s){
+      if (!ensureUsername()) return;
+      const full = s.artist + " — " + s.title;
+      try{
+        await db.ref("queue").push({
+          user: USERNAME,
+          song: full,
+          time: Date.now()
+        });
+        notify(true, "Añadido a la cola");
+      }catch(e){
+        notify(false, "No se pudo añadir");
+        console.error(e);
+      }
+    }
+
+    document.getElementById("search").addEventListener("input", e=>{
+      const q = e.target.value.trim().toLowerCase();
+      if (!q){ renderSongs(ALL_SONGS); return; }
+      const f = ALL_SONGS.filter(s =>
+        s.artist.toLowerCase().includes(q) || s.title.toLowerCase().includes(q)
+      );
+      renderSongs(f);
     });
-  }
 
-  document.getElementById("search").addEventListener("input", async e => {
-    let term = e.target.value.toLowerCase();
-    let res = await fetch("songs.json");
-    let songs = await res.json();
-    let filtered = songs.filter(s => 
-      s.artist.toLowerCase().includes(term) || s.title.toLowerCase().includes(term)
-    );
-    displaySongs(filtered);
-  });
+    const queueRef = db.ref("queue");
+    queueRef.on("value", snap => {
+      const list = [];
+      snap.forEach(ch => list.push({key: ch.key, ...ch.val()}));
+      list.sort((a,b)=> a.time - b.time);
+      renderQueue(list);
+    });
 
-  db.ref("queue").on("value", renderQueue);
-  loadSongs();
-</script>
+    function renderQueue(items){
+      const root = document.getElementById("queue");
+      root.innerHTML = "";
+      if (items.length === 0){
+        const empty = document.createElement("div");
+        empty.style.color = "var(--muted)";
+        empty.style.padding = "12px 16px";
+        empty.textContent = "Sin canciones en cola.";
+        root.appendChild(empty);
+        return;
+      }
+      for(const it of items){
+        const row = document.createElement("div");
+        row.className = "q-item";
+        const left = document.createElement("div");
+        left.innerHTML = '<span class="who">'+escapeHtml(it.user)+'</span><span class="song">'+escapeHtml(it.song)+'</span>';
+        row.appendChild(left);
 
+        const actions = document.createElement("div");
+        actions.className = "q-actions";
+
+        const del = document.createElement("button");
+        del.className = "btn btn-danger";
+        del.textContent = "🗑 Borrar";
+        del.addEventListener("click", async ()=>{
+          if (!confirm("¿Estás seguro de que quieres borrar esta canción?")) return;
+          try{
+            await db.ref("queue/"+it.key).remove();
+          }catch(e){
+            notify(false, "No se pudo borrar");
+            console.error(e);
+          }
+        });
+        actions.appendChild(del);
+
+        row.appendChild(actions);
+        root.appendChild(row);
+      }
+    }
+
+    loadSongs();
+  </script>
 </body>
 </html>
