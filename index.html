@@ -205,7 +205,6 @@ function ensureUsername() {
       renderQueue(list);
     });
 
-    
     function renderQueue(items){
       const root = document.getElementById("queue");
       root.innerHTML = "";
@@ -217,38 +216,6 @@ function ensureUsername() {
         root.appendChild(empty);
         return;
       }
-      for(const it of items){
-        const row = document.createElement("div");
-        row.className = "q-item";
-        const left = document.createElement("div");
-        left.innerHTML = '<span class="who">'+escapeHtml(it.user)+'</span><span class="song">'+escapeHtml(it.song)+'</span>';
-        row.appendChild(left);
-
-        const actions = document.createElement("div");
-        actions.className = "q-actions";
-
-        // Permitir borrar si es el mismo usuario o si es Gataz0
-        if (USERNAME === "Gataz0" || USERNAME === it.user) {
-            const del = document.createElement("button");
-            del.className = "btn btn-danger";
-            del.textContent = "🗑 Borrar";
-            del.addEventListener("click", async ()=>{
-              if (!confirm("¿Estás seguro de que quieres borrar esta canción?")) return;
-              try{
-                await db.ref("queue/"+it.key).remove();
-              }catch(e){
-                notify(false, "No se pudo borrar");
-                console.error(e);
-              }
-            });
-            actions.appendChild(del);
-        }
-
-        row.appendChild(actions);
-        root.appendChild(row);
-      }
-    }
-
       for(const it of items){
         const row = document.createElement("div");
         row.className = "q-item";
