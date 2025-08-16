@@ -197,14 +197,23 @@ function ensureUsername() {
     });
 
     const queueRef = db.ref("queue").orderByChild("time"); // muestra toda la cola
-    queueRef.on("value", snap => {
-      const list = [];
-      snap.forEach(ch => list.push({key: ch.key, ...ch.val()}));
-      list.sort((a,b)=> a.time - b.time);
-      renderQueue(list);
-    });
-
-    function renderQueue(items){
+    queueRef.on("value", snapshot => {
+  const queueList = document.getElementById("queue-list");
+  queueList.innerHTML = ""; // limpiar la lista
+  const items = [];
+  snapshot.forEach(childSnapshot => {
+    const data = childSnapshot.val();
+    items.push({ key: childSnapshot.key, ...data });
+  });
+  // ordenar por time ascendente
+  items.sort((a,b) => a.time - b.time);
+  items.forEach(item => {
+    const li = document.createElement("li");
+    li.innerHTML = `<strong style="color:green;">${item.user}</strong> ${item.song}
+                    <button onclick="deleteSong('${item.key}')">🗑 Borrar</button>`;
+    queueList.appendChild(li);
+  });
+});function renderQueue(items){
       const root = document.getElementById("queue");
       root.innerHTML = "";
       if (items.length === 0){
