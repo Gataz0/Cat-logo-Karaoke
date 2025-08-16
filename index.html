@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>🎤 Catálogo de canciones</title>
-  <style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>🎤 Catálogo de canciones</title>
+<style>
     :root{
       --bg:#121218;
       --panel:#16161f;
@@ -65,7 +66,7 @@
     .fab{
       position:fixed; right:16px; bottom:16px; display:flex; flex-direction:column; gap:10px; z-index:20;
     }
-    .chip{border-radius:999px; padding:8px 12px; background:#0f0f15; border:1px solid var(--outline); font-size:12px}
+    .chip{border-radius:999px; padding:8px 12px; background:#2563eb; color:white; border:1px solid #1e40af; font-size:12px; font-weight:600}
     .notif{
       position:fixed; left:50%; top:16%; transform:translate(-50%,-50%) scale(.96);
       background:#0f0f15; border:1px solid var(--outline); padding:12px 16px; border-radius:12px;
@@ -82,34 +83,32 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="title"><span class="dot"></span> <span>Catálogo de canciones</span></div>
+<div class="container">
+<div style="position:absolute; top:16px; right:16px;">
+<button class="chip" onclick="changeUsername()">Cambiar usuario</button>
+</div>
 
-    <div class="search-bar">
-      <input id="search" class="search-input" type="text" placeholder="Buscar por artista o título..." autocomplete="off"/>
-    </div>
-
-    <div id="cards" class="grid"></div>
-
-    <div id="queueSection" class="section">
-      <h3>📜 Cola de peticiones</h3>
-      <div id="queue" class="queue"></div>
-    </div>
-  </div>
-
-  <div class="fab">
-    <button class="chip" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ Arriba</button>
-    <button class="chip" onclick="document.getElementById('queueSection').scrollIntoView({behavior:'smooth'})">📄 Ver cola</button>
-  </div>
-
-  <div id="notif" class="notif">
-    <span id="notifIcon" class="icon">✓</span>
-    <span id="notifText">Añadido</span>
-  </div>
-
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-  <script>
+<div class="title"><span>🎤</span> Catálogo de canciones</div>
+<div class="search-bar">
+<input autocomplete="off" class="search-input" id="search" placeholder="Buscar por artista o título..." type="text"/>
+</div>
+<div class="grid" id="cards"></div>
+<div class="section" id="queueSection">
+<h3>📜 Cola de peticiones</h3>
+<div class="queue" id="queue"></div>
+</div>
+</div>
+<div class="fab">
+<button class="chip" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ Arriba</button>
+<button class="chip" onclick="document.getElementById('queueSection').scrollIntoView({behavior:'smooth'})">📄 Ver cola</button>
+</div>
+<div class="notif" id="notif">
+<span class="icon" id="notifIcon">✓</span>
+<span id="notifText">Añadido</span>
+</div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
     var firebaseConfig = {
       apiKey: "AIzaSyCAHqKUswtw9KUXhdeKs7z7WkIedI42Bk8",
       authDomain: "cola-canciones.firebaseapp.com",
@@ -124,7 +123,15 @@
 
     let USERNAME = localStorage.getItem("karaoke_username") || "";
 
-    function ensureUsername() {
+    function changeUsername(){
+  const newName = prompt("Introduce tu nuevo nombre o nick");
+  if (newName && newName.trim() !== ""){
+    USERNAME = newName.trim();
+    localStorage.setItem("karaoke_username", USERNAME);
+    alert("Nombre de usuario cambiado a: " + USERNAME);
+  }
+}
+function ensureUsername() {
       if (!USERNAME) {
         USERNAME = prompt("Introduce tu nombre o nick") || "";
         if (USERNAME.trim() === "") return false;
