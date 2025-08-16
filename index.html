@@ -196,7 +196,7 @@ function ensureUsername() {
       renderSongs(f);
     });
 
-    const queueRef = db.ref("queue").orderByChild("time");
+    const queueRef = db.ref("queue").orderByChild("time"); // muestra toda la cola
     queueRef.on("value", snap => {
       const list = [];
       snap.forEach(ch => list.push({key: ch.key, ...ch.val()}));
