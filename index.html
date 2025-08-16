@@ -87,7 +87,6 @@
 <div style="position:absolute; top:16px; right:16px;">
 <button class="chip" onclick="changeUsername()">Cambiar usuario</button>
 </div>
-
 <div class="title"><span>🎤</span> Catálogo de canciones</div>
 <div class="search-bar">
 <input autocomplete="off" class="search-input" id="search" placeholder="Buscar por artista o título..." type="text"/>
@@ -197,7 +196,7 @@ function ensureUsername() {
       renderSongs(f);
     });
 
-    const queueRef = db.ref("queue");
+    const queueRef = db.ref("queue").orderByChild("time");
     queueRef.on("value", snap => {
       const list = [];
       snap.forEach(ch => list.push({key: ch.key, ...ch.val()}));
